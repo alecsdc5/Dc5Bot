@@ -19,8 +19,8 @@ namespace BinanceBot.MarketBot.Console
     {
         #region Bot Settings
         // WARN: set your credentials here here 
-        private const string ApiKey = "***";
-        private const string Secret = "***";
+        private const string ApiKey = "lZ6M1NOtHHWTjXie3hj9gVPmeuCL5rrYHe0kbT17fjOmxf0Cdv9EZFT9pPXuKIAF";
+        private const string Secret = "HYX2dY4SWHoKDUDHCuagXSQqwHHcxQdE4aTZCyD9g7jkxvablWgqfuhnxOjhWcya";
 
         // WARN: set necessary token here
         private const string Symbol = "DOGEBTC";
