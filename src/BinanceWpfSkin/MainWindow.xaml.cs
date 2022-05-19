@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
 using Binance.Net;
 using Binance.Net.Enums;
 using Binance.Net.Interfaces;
@@ -13,9 +15,14 @@ using CryptoExchange.Net.Authentication;
 using static System.Console;
 
 
-namespace BinanceBot.MarketBot.Console
+
+namespace BinanceWpfSkin
 {
-    internal static class Program
+    /// <summary>
+    /// Interaction logic for MainWindow.xaml
+    /// </summary>
+    
+    public partial class MainWindow : Window
     {
         #region Bot Settings
         // WARN: set your credentials here here 
@@ -28,9 +35,18 @@ namespace BinanceBot.MarketBot.Console
         #endregion
 
         private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
-        
 
-        static async Task Main(string[] args)
+        public MainWindow()
+        {
+            InitializeComponent();
+        }
+
+        private async Task gridEmployees_LoadedAsync(object sender, RoutedEventArgs e)
+        {
+            await CreateDataTableAsync();
+           // gridEmployees.DataContext = employeeData.DefaultView;
+        }
+        private static async Task CreateDataTableAsync()
         {
             // 1. create connections with exchange
             var credentials = new ApiCredentials(ApiKey, Secret);
@@ -49,14 +65,12 @@ namespace BinanceBot.MarketBot.Console
             if (!permissionsResponse.Success)
             {
                 Logger.Error($"{permissionsResponse.Error?.Message}");
-                ReadLine();
             }
             else if (permissionsResponse.Data.IpRestrict | !permissionsResponse.Data.EnableSpotAndMarginTrading)
             {
                 Logger.Error("Insufficient API permissions");
-                ReadLine();
             }
-           
+            ReadLine();
 
             // 3. set bot strategy config
             var exchangeInfoResult = binanceRestClient.Spot.System.GetExchangeInfoAsync(Symbol);
@@ -64,7 +78,7 @@ namespace BinanceBot.MarketBot.Console
             var symbolInfo = exchangeInfoResult.Result.Data.Symbols
                 .Single(s => s.Name.Equals(Symbol, StringComparison.InvariantCultureIgnoreCase));
 
-            if (!(symbolInfo.Status == SymbolStatus.Trading && symbolInfo.OrderTypes.Contains(OrderType.Market)))
+           if (!(symbolInfo.Status == SymbolStatus.Trading && symbolInfo.OrderTypes.Contains(OrderType.Market)))
             {
                 Logger.Error($"Symbol {symbolInfo.Name} doesn't suitable for this strategy");
                 return;
@@ -88,8 +102,8 @@ namespace BinanceBot.MarketBot.Console
             var strategyConfig = new MarketStrategyConfiguration
             {
                 TradeWhenSpreadGreaterThan = .02M, // or 0.02%, (price spread*min_volume) should be greater than broker's commissions for trade
-                MinOrderVolume = symbolInfo.LotSizeFilter.MinQuantity*10,
-                MaxOrderVolume = symbolInfo.LotSizeFilter.MinQuantity*100,
+                MinOrderVolume = symbolInfo.LotSizeFilter.MinQuantity * 10,
+                MaxOrderVolume = symbolInfo.LotSizeFilter.MinQuantity * 100,
                 QuoteAssetPrecision = symbolInfo.QuoteAssetPrecision,
                 PricePrecision = pricePrecision,
                 ReceiveWindow = ReceiveWindow
@@ -112,9 +126,15 @@ namespace BinanceBot.MarketBot.Console
             {
                 bot.Stop();
             }
-           
+
             WriteLine("Press Enter to exit...");
             ReadLine();
-        }   
+        }
+
+        private void gridEmployees_Loaded(object sender, RoutedEventArgs e)
+        {
+            CreateDataTableAsync();
+        }
     }
 }
+

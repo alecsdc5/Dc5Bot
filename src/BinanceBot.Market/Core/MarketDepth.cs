@@ -117,7 +117,7 @@ namespace BinanceBot.Market.Core
                         if (orders.ContainsKey(t.Price)) orders.Remove(t.Price);
                 }
             }
-
+            
             // save prev BestPair to OnMarketBestPairChanged raise event
             MarketDepthPair prevBestPair = BestPair;
             // update asks market depth
